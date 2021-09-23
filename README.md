@@ -1,14 +1,14 @@
 <p><img src="https://avatars1.githubusercontent.com/u/12563465?s=200&v=4" alt="OCI logo" title="oci" align="left" height="70" /></p>
-<p><img src="https://i.imgur.com/IBNz2CM.jpg" alt="0xO1 logo" title="0xO1" align="right" height="80" /></p>
+<p><img src="https://prysmaticlabs.com/assets/PrysmStripe.png" alt="Prysm logo" title="prysm" align="right" height="60" /></p>
 
-Container File :zero::one: Demo
+Container File :stars: :link: Prysm
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-template?color=yellow)
 [![0x0I](https://circleci.com/gh/0x0I/container-file-demo.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-demo)
 [![Docker Pulls](https://img.shields.io/docker/pulls/0labs/demo?style=flat)](https://hub.docker.com/repository/docker/0labs/demo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
-...description of the application or service...
+Configure and operate Prysm: an Ethereum 2.0 client written in Go
 
 **Overview**
   - [Setup](#setup)
