@@ -8,7 +8,7 @@ Container File :stars: :link: Prysm
 [![Docker Pulls](https://img.shields.io/docker/pulls/0labs/demo?style=flat)](https://hub.docker.com/repository/docker/0labs/demo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
-Configure and operate Prysm: an Ethereum 2.0 client written in Go
+Configure and operate Prysm: A full-featured client for the Ethereum 2.0 protocol, written in Go
 
 **Overview**
   - [Setup](#setup)
