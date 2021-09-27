@@ -20,11 +20,9 @@ FROM ubuntu:20.04 as base
 
 RUN apt update && apt install --yes --no-install-recommends \
     ca-certificates \
-    cron \
     curl \
     pip \
     tini \
-    zip unzip \
     # apt cleanup
 	&& apt-get autoremove -y; \
 	apt-get clean; \
@@ -38,7 +36,7 @@ COPY scripts/entrypoint.sh /usr/local/bin/prysm-entrypoint
 COPY scripts/prysm-helper.py /usr/local/bin/prysm-helper
 RUN chmod 775 /usr/local/bin/prysm-helper
 
-RUN pip install click requests toml
+RUN pip install click requests pyaml
 
 ENTRYPOINT ["prysm-entrypoint"]
 
@@ -53,6 +51,9 @@ WORKDIR /test
 
 COPY test /test
 COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
+COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
+COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
+RUN chmod +x /usr/local/bin/beacon-chain /usr/local/bin/validator /usr/local/bin/slasher
 
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
@@ -72,6 +73,7 @@ LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
 COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
 COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
 COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
+RUN chmod +x /usr/local/bin/beacon-chain /usr/local/bin/validator /usr/local/bin/slasher
 
 # ORDER: 1. beacon-chain, 2. validator, 3. slasher
 #      p2p/tcp  p2p/udp  rpc  grpc-gateway  metrics
