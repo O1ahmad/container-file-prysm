@@ -31,8 +31,10 @@ file:
     group: root
     filetype: file
     contains:
+      - "accept-terms-of-use: true"
       - "http-web3provider: https://localhost:8545"
       - "rpc-host: 0.0.0.0"
+      - "pyrmont: true"
 package:
   curl:
     installed: true
