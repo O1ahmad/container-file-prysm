@@ -18,6 +18,12 @@ file:
     owner: root
     group: root
     filetype: file
+  /usr/local/bin/eth2deposit:
+    exists: true
+    mode: "0777"
+    owner: root
+    group: root
+    filetype: symlink
   /etc/prysm/config.yml:
     exists: true
     mode: "0644"
@@ -25,7 +31,6 @@ file:
     group: root
     filetype: file
     contains:
-      - "chain-id: 5"
       - "http-web3provider: https://localhost:8545"
       - "rpc-host: 0.0.0.0"
 package:
@@ -37,4 +42,6 @@ command:
   validator --help:
     exit-status: 0
   slasher --help:
+    exit-status: 0
+  eth2deposit --help:
     exit-status: 0

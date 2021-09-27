@@ -38,6 +38,10 @@ RUN chmod 775 /usr/local/bin/prysm-helper
 
 RUN pip install click requests pyaml
 
+COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
+COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
+COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
+
 ENTRYPOINT ["prysm-entrypoint"]
 
 # ******* Stage: testing ******* #
@@ -50,10 +54,6 @@ RUN curl -fsSL https://goss.rocks/install | GOSS_VER=${goss_version} GOSS_DST=/u
 WORKDIR /test
 
 COPY test /test
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
-RUN chmod +x /usr/local/bin/beacon-chain /usr/local/bin/validator /usr/local/bin/slasher
 
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
@@ -94,9 +94,6 @@ RUN cd /tmp/prysm && bazel build --config=release //cmd/client-stats:client-stat
 
 FROM base as tools
 
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
 COPY --from=build-tools /tmp/prysm/bazel-bin/cmd/client-stats/client-stats_/client-stats /usr/local/bin/
 
 WORKDIR /var/lib/prysm
