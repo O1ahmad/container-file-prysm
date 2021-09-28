@@ -12,12 +12,6 @@ file:
     owner: root
     group: root
     filetype: file
-  /usr/local/bin/slasher:
-    exists: true
-    mode: "0555"
-    owner: root
-    group: root
-    filetype: file
   /usr/local/bin/eth2deposit:
     exists: true
     mode: "0777"
@@ -35,6 +29,13 @@ file:
       - "http-web3provider: https://localhost:8545"
       - "rpc-host: 0.0.0.0"
       - "pyrmont: true"
+      - "genesis-state: /prysm/data/genesis.ssz"
+  /prysm/data/genesis.ssz:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
 package:
   curl:
     installed: true
@@ -42,8 +43,6 @@ command:
   beacon-chain --help:
     exit-status: 0
   validator --help:
-    exit-status: 0
-  slasher --help:
     exit-status: 0
   eth2deposit --help:
     exit-status: 0

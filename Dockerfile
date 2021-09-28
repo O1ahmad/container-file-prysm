@@ -13,7 +13,6 @@ RUN git clone --depth 1 --branch ${prysm_version} https://github.com/prysmaticla
 
 RUN cd prysm && bazel build --config=release //beacon-chain:beacon-chain
 RUN cd prysm && bazel build --config=release //validator:validator
-RUN cd prysm && bazel build --config=release //slasher:slasher
 
 # ******* Stage: base ******* #
 FROM ubuntu:20.04 as base
@@ -40,7 +39,6 @@ RUN pip install click requests pyaml
 
 COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
 COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
 
 ENTRYPOINT ["prysm-entrypoint"]
 
@@ -69,11 +67,6 @@ LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
 	01labs.image.source="https://github.com/0x0I/container-file-prysm/blob/${version}/Dockerfile" \
 	01labs.image.documentation="https://github.com/0x0I/container-file-prysm/blob/${version}/README.md" \
 	01labs.image.version="${version}"
-
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /usr/local/bin/
-COPY --from=builder /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
-RUN chmod +x /usr/local/bin/beacon-chain /usr/local/bin/validator /usr/local/bin/slasher
 
 # ORDER: 1. beacon-chain, 2. validator, 3. slasher
 #      p2p/tcp  p2p/udp  rpc  grpc-gateway  metrics

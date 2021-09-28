@@ -8,6 +8,7 @@ import sys
 
 import click
 import requests
+import urllib.request
 import yaml
 
 @click.group()
@@ -52,17 +53,34 @@ def execute_command(command):
               default=lambda: os.environ.get("PRYSM_CONFIG", DEFAULT_PRYSM_CONFIG_PATH),
               show_default=DEFAULT_PRYSM_CONFIG_PATH,
               help='path to prysm configuration file to generate or customize from environment config settings')
-def customize(config_path):
+@click.option('--download-genesis',
+              default=lambda: os.environ.get("DOWNLOAD_GENESIS", "true"),
+              show_default="true",
+              help='Whether to automatically download the genesis state file associated with the designated Eth2 chain if specified in config')
+def customize(config_path, download_genesis):
     config_dict = dict()
     if os.path.isfile(config_path):
-        config_dict = yaml.load(config_path)
+        with open(config_path, "r") as stream:
+            try:
+                config_dict = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
 
     for var in os.environ.keys():
         var_split = var.split('_')
         if len(var_split) == 2 and var_split[0].lower() == "config":
             config_setting = var_split[1]
-
             value = os.environ[var]
+
+            # download genesis state file according to set Eth2 chain automatically
+            if config_setting.lower() == "genesis-state" and download_genesis.lower() == "true":
+                # ensure genesis-state file DIR exists
+                os.makedirs(os.path.dirname(value))
+                genesis_url = "https://github.com/eth2-clients/eth2-networks/raw/32dcce003694ea17e04bc17cc56de2f7909a1d95/shared/{chain}/genesis.ssz".format(
+                    chain=os.environ.get("ETH2_CHAIN", "pyrmont")
+                )
+                urllib.request.urlretrieve(genesis_url, value)
+
             # ensure values are cast appropriately
             if value.isdigit():
                 value = int(value)
