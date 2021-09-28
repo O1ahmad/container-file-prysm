@@ -69,11 +69,11 @@ LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
 	01labs.image.version="${version}"
 
 # ORDER: 1. beacon-chain, 2. validator, 3. slasher
-#      p2p/tcp  p2p/udp  rpc  grpc-gateway  metrics
-#        ↓         ↓      ↓       ↓           ↓
-EXPOSE 13000    12000   4000    3500        8080
-EXPOSE                  7000    7500        8081
-EXPOSE                                      8082
+#      p2p/tcp  p2p/udp  rpc  http-api  json-rpc   metrics
+#        ↓         ↓      ↓       ↓         ↓         ↓
+EXPOSE 13000    12000   4000    3501       3500      8080
+EXPOSE                  7000               7500      8081
+EXPOSE                                               8082
 
 CMD ["beacon-chain", "--accept-terms-of-use"]
 
