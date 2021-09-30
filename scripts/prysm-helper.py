@@ -79,7 +79,7 @@ def customize(config_path, download_genesis):
             # download genesis state file according to set Eth2 chain automatically
             if config_setting.lower() == "genesis-state" and download_genesis.lower() == "true":
                 # ensure genesis-state file DIR exists
-                os.makedirs(os.path.dirname(value))
+                os.makedirs(os.path.dirname(value), exist_ok=True)
                 genesis_url = "https://github.com/eth2-clients/eth2-networks/raw/32dcce003694ea17e04bc17cc56de2f7909a1d95/shared/{chain}/genesis.ssz".format(
                     chain=os.environ.get("ETH2_CHAIN", "pyrmont")
                 )
