@@ -22,7 +22,7 @@ services:
       - ${beacon_rpc_port:-4000}:4000/tcp
       - ${beacon_metrics_port:-8080}:8080/tcp
     volumes:
-      - "${host_data_dir:-/var/tmp/prysm}:${CONFIG_datadir:-/data}"
+      - "${host_data_dir:-/var/tmp/prysm}:${CONFIG_datadir:-/root/.eth2}"
     networks:
       - ethereum
     restart: ${restart_policy:-unless-stopped}
@@ -43,7 +43,7 @@ services:
       - ${validator_rpc_port:-7000}:7000/tcp
       - ${validator_metrics_port:-8081}:8081/tcp
     volumes:
-      - "${host_data_dir:-/var/tmp/prysm}:${CONFIG_datadir:-/data}"
+      - "${host_data_dir:-/var/tmp/prysm}:${CONFIG_datadir:-/root/.eth2}"
       - "${host_wallet_dir:-/operations/eth2/wallets}:/wallets"
       - "${host_keys_dir:-/operations/eth2/keys}:/keys"
     networks:
