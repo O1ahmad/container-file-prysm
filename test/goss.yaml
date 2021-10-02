@@ -39,6 +39,8 @@ file:
 package:
   curl:
     installed: true
+  cron:
+    installed: true
 command:
   beacon-chain --help:
     exit-status: 0
@@ -46,3 +48,7 @@ command:
     exit-status: 0
   eth2deposit --help:
     exit-status: 0
+  crontab -l:
+    exit-status: 0
+    stdout:
+      - prysm-helper status backup-db --host-addr=http://localhost:8080

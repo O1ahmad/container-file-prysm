@@ -36,6 +36,12 @@ DEFAULT_API_METHOD = 'GET'
 DEFAULT_API_PATH = 'eth/v1/node/health'
 DEFAULT_API_DATA = '{}'
 
+DEFAULT_BACKUP_HOST_ADDR = 'http://localhost:8080'
+DEFAULT_PRYSM_BACKUP_SERVICE = "beacon-chain"
+DEFAULT_PRYSM_BACKUP_PATH = os.environ.get("CONFIG_db-backup-output-dir", "/root/.eth2/backups/")
+DEFAULT_PRYSM_RESTORE_DIR = "{dir}/beaconchain".format(dir=os.environ.get("CONFIG_datadir", "/root/.eth2"))
+
+
 def print_json(json_blob):
     print(json.dumps(json_blob, indent=4, sort_keys=True))
 
@@ -141,6 +147,58 @@ def api_request(host_addr, api_method, api_path, api_data):
         }))
     except json.decoder.JSONDecodeError:
         print(resp.text)
+
+@status.command()
+@click.option('--host-addr',
+              default=lambda: os.environ.get("BACKUP_HOST_ADDR", DEFAULT_BACKUP_HOST_ADDR),
+              show_default=DEFAULT_BACKUP_HOST_ADDR,
+              help='Prysm Eth2 metrics host address in format <protocol(http/https)>://<IP>:<port>')
+def backup_db(host_addr):
+    """Backup Prysm beacon-chain node or validator databases
+       (see for details: https://docs.prylabs.network/docs/prysm-usage/database-backups/)
+    """
+
+    try:
+        resp = requests.get("{host}/db/backup".format(host=host_addr))
+
+        # signal error if non-OK response status
+        resp.raise_for_status()
+
+        print_json(resp.json())
+    except requests.exceptions.RequestException as err:
+        sys.exit(print_json({
+            "error": "API request to {host} failed with: {error}".format(
+                host=host_addr,
+                error=err
+            )
+        }))
+    except json.decoder.JSONDecodeError:
+        print(resp.text)
+
+@status.command()
+@click.option('--backup-path',
+              default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_PRYSM_BACKUP_PATH),
+              show_default=DEFAULT_PRYSM_BACKUP_PATH,
+              help='path of backup prysm service database')
+@click.option('--restore-target-dir',
+              default=lambda: os.environ.get("RESTORE_DIR", DEFAULT_PRYSM_RESTORE_DIR),
+              show_default=DEFAULT_PRYSM_RESTORE_DIR,
+              help='Directory to restore imported database backup to')
+@click.option('--service',
+              default=lambda: os.environ.get("BACKUP_SERVICE", DEFAULT_PRYSM_BACKUP_SERVICE),
+              show_default=DEFAULT_PRYSM_BACKUP_SERVICE,
+              help='path to backup prysm service database')
+def import_db_backup(backup_path, restore_target_dir, service):
+    """Import Prysm beacon-chain or validator Backup Prysm beacon-chain node or validator databases
+       (see for details: https://docs.prylabs.network/docs/prysm-usage/database-backups/)
+    """
+
+    execute_command("{svc} db restore --restore-source-file={path} --restore-target-dir={dir}".format(
+        svc=service,
+        path=backup_path,
+        dir=restore_target_dir
+    ))
+
 
 if __name__ == "__main__":
     cli()
