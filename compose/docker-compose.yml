@@ -44,8 +44,8 @@ services:
       - ${validator_metrics_port:-8081}:8081/tcp
     volumes:
       - "${host_data_dir:-/var/tmp/prysm}:${CONFIG_datadir:-/root/.eth2}"
-      - "${host_wallet_dir:-/operations/eth2/wallets}:/wallets"
-      - "${host_keys_dir:-/operations/eth2/keys}:/keys"
+      - "${host_wallet_dir:-/var/tmp/prysm/wallets}:/wallets"
+      - "${host_keys_dir:-/var/tmp/prysm/keys}:/keys"
     networks:
       - ethereum
     restart: ${restart_policy:-unless-stopped}
