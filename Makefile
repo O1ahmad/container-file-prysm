@@ -9,9 +9,18 @@ build:
 test:
 	docker build --target test --build-arg prysm_version=$(version) --tag prysm:test . && docker run --env-file test/test.env prysm:test
 
-test-compose:
-	cd compose && docker-compose config && docker-compose up -d && \
-	sleep 5 && docker-compose logs 2>&1 | grep "Starting prysm on Rinkeby" && \
+test-compose-beacon:
+	cd compose && docker-compose config && docker-compose up -d beacon-node && \
+	sleep 5 && docker-compose logs 2>&1 | grep "Running on Pyrmont Testnet" && \
+	docker-compose logs 2>&1 | grep "Starting initial chain sync" && \
+	docker-compose logs 2>&1 | grep "Connected to eth1 proof-of-work chain" && \
+	docker-compose down
+
+test-compose-validator:
+	cd compose && docker-compose config && docker-compose up -d  validator && \
+	sleep 5 && docker-compose logs 2>&1 | grep "Running on Pyrmont Testnet" && \
+	docker-compose logs 2>&1 | grep "Starting validator node" && \
+	docker-compose logs 2>&1 | grep "Starting Prysm web UI on address" && \
 	docker-compose down
 
 release:
