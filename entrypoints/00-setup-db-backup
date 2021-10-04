@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Print all commands executed if DEBUG mode enabled
+[ -n "${DEBUG:-""}" ] && set -x
+
+if [[ "$AUTO_BACKUP_DB" = "true" ]]; then
+    host_addr="${BACKUP_HOST_ADDR:-http://localhost:8080}"
+    backup_interval="${BACKUP_INTERVAL:-0 */6 * * *}" # @every 6 hours by default
+    backup_cmd="prysm-helper status backup-db --host-addr=${host_addr}"
+    
+    service cron start
+	echo "${backup_interval} ${backup_cmd}" > /tmp/prysm-cron
+	crontab /tmp/prysm-cron
+fi
+
+if [[ "$IMPORT_BACKUP_DB" = "true" ]]; then
+    svc="${BACKUP_SERVICE:-beacon-chain}"
+    prysm-helper status import-db-backup --service=$svc
+fi

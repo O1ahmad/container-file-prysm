@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Print all commands executed if DEBUG mode enabled
+[ -n "${DEBUG:-""}" ] && set -x
+
+if [[ "$SETUP_VALIDATOR" = "true" ]]; then
+    echo "${VALIDATOR_WALLET_PASSWORD}" > /tmp/wallet-password
+    echo "${VALIDATOR_ACCOUNT_PASSWORD}" > /tmp/account-password
+
+    if [ -n "${VALIDATOR_KEYS_DIR+x}" ]; then
+        keydir="${VALIDATOR_KEYS_DIR}"
+    elif [ -n "${DEPOSIT_DIR+x}" ]; then
+        keydir="${DEPOSIT_DIR}"
+    else
+        keydir="/keys"
+    fi
+
+    validator accounts import --accept-terms-of-use=true --keys-dir=$keydir --wallet-dir="${VALIDATOR_WALLET_DIR:-/wallets}" \
+     "--${ETH2_CHAIN:-pyrmont}" --wallet-password-file=/tmp/wallet-password --account-password-file=/tmp/account-password
+fi

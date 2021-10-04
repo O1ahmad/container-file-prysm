@@ -7,9 +7,18 @@ jobs:
          - run:
               name: docker build complete image
               command: make build
+
          - run:
               name: docker build and --target test
               command: make test
+
+         - run:
+              name: test Beacon-chain node docker-compose definition
+              command: make test-compose-beacon
+         
+         - run:
+              name: test Validator docker-compose definition
+              command: make test-compose-validator
 
          - run:
               name: login to Dockerhub for release
@@ -18,3 +27,7 @@ jobs:
          - run:
               name: push image version to Dockerhub
               command: make release
+
+         - run:
+              name: build and push tools image version to Dockerhub
+              command: make tools
