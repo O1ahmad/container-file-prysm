@@ -3,7 +3,7 @@
 # Print all commands executed if DEBUG mode enabled
 [ -n "${DEBUG:-""}" ] && set -x
 
-if [ -n "${SETUP_VALIDATOR+x}" ]; then
+if [[ "$SETUP_VALIDATOR" = "true" ]]; then
     echo "${VALIDATOR_WALLET_PASSWORD}" > /tmp/wallet-password
     echo "${VALIDATOR_ACCOUNT_PASSWORD}" > /tmp/account-password
 

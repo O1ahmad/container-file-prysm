@@ -3,7 +3,7 @@
 # Print all commands executed if DEBUG mode enabled
 [ -n "${DEBUG:-""}" ] && set -x
 
-if [ -n "${SETUP_DEPOSIT_CLI+x}" ]; then
+if [[ "$SETUP_DEPOSIT_CLI" = "true" ]]; then
     curl --silent --location -o eth2deposit-cli.tar.gz \
      https://github.com/ethereum/eth2.0-deposit-cli/releases/download/${DEPOSIT_CLI_VERSION:-v1.2.0}/eth2deposit-cli-256ea21-linux-amd64.tar.gz
     # verify integrity/checksum of download
@@ -13,7 +13,7 @@ if [ -n "${SETUP_DEPOSIT_CLI+x}" ]; then
     tar -xzf eth2deposit-cli.tar.gz --strip-components=2 -C /usr/local/bin/
     ln -s /usr/local/bin/deposit /usr/local/bin/eth2deposit
 
-    if [ -n "${SETUP_DEPOSIT_ACCOUNTS}" ]; then
+    if [[ "$SETUP_DEPOSIT_ACCOUNTS" = "true" ]]; then
         mkdir -p ${DEPOSIT_DIR:-/var/tmp/deposit}
         eth2deposit new-mnemonic --mnemonic_language=${DEPOSIT_MNEMONIC_LANG:-english} --num_validators=${DEPOSIT_NUM_VALIDATORS:-1} \
         --folder=${DEPOSIT_DIR:-/var/tmp/deposit} --chain=${ETH2_CHAIN:-mainnet} --keystore_password=${DEPOSIT_KEY_PASSWORD:-passw0rd}
