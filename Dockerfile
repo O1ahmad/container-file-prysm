@@ -82,12 +82,17 @@ CMD ["beacon-chain", "--accept-terms-of-use"]
 FROM builder as build-tools
 
 RUN cd /tmp/prysm && bazel build --config=release //cmd/client-stats:client-stats
+RUN cd /tmp/prysm && bazel build --config=release //cmd/slasher:slasher
 
 # ------- #
 
 FROM base as tools
 
+# Slasher metrics service
+EXPOSE	8082
+
 COPY --from=build-tools /tmp/prysm/bazel-bin/cmd/client-stats/client-stats_/client-stats /usr/local/bin/
+COPY --from=build-tools /tmp/prysm/bazel-bin/cmd/slasher/slasher_/slasher /usr/local/bin/
 
 WORKDIR /var/lib/prysm
 
