@@ -17,3 +17,4 @@ if [ -n "${SETUP_VALIDATOR+x}" ]; then
 
     validator accounts import --accept-terms-of-use=true --keys-dir=$keydir --wallet-dir="${VALIDATOR_WALLET_DIR:-/wallets}" \
      "--${ETH2_CHAIN:-pyrmont}" --wallet-password-file=/tmp/wallet-password --account-password-file=/tmp/account-password
+fi

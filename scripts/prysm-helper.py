@@ -39,7 +39,7 @@ DEFAULT_API_DATA = '{}'
 DEFAULT_BACKUP_HOST_ADDR = 'http://localhost:8080'
 DEFAULT_PRYSM_BACKUP_SERVICE = "beacon-chain"
 DEFAULT_PRYSM_BACKUP_PATH = os.environ.get("CONFIG_db-backup-output-dir", "/root/.eth2/backups/")
-DEFAULT_PRYSM_RESTORE_DIR = "{dir}/beaconchain".format(dir=os.environ.get("CONFIG_datadir", "/root/.eth2"))
+DEFAULT_PRYSM_RESTORE_DIR = os.environ.get("CONFIG_datadir", "/root/.eth2")
 
 
 def print_json(json_blob):
@@ -158,6 +158,7 @@ def backup_db(host_addr):
        (see for details: https://docs.prylabs.network/docs/prysm-usage/database-backups/)
     """
 
+    print("Backing up database...")
     try:
         resp = requests.get("{host}/db/backup".format(host=host_addr))
 
@@ -193,7 +194,8 @@ def import_db_backup(backup_path, restore_target_dir, service):
        (see for details: https://docs.prylabs.network/docs/prysm-usage/database-backups/)
     """
 
-    execute_command("{svc} db restore --restore-source-file={path} --restore-target-dir={dir}".format(
+    print("Importing database backup from {path} to {dir}".format(path=backup_path, dir=restore_target_dir))
+    execute_command("{svc} --accept-terms-of-use db restore --restore-source-file={path} --restore-target-dir={dir}".format(
         svc=service,
         path=backup_path,
         dir=restore_target_dir
