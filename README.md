@@ -224,7 +224,7 @@ Options:
   --help                     Show this message and exit.
 ```
 
-`$IMPORT_BACKUP_DB=<string>` (**required**)
+`$IMPORT_BACKUP_DB=<string>` (**default**: `false`)
 - whether to automatically import a beacon-chain or validator node database on launch
 
 `$BACKUP_SERVICE=<string>` (**default**: `/root/.ethereum/keystore`)
