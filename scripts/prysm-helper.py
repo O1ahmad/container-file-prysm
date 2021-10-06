@@ -188,10 +188,9 @@ def backup_db(host_addr):
 @click.option('--service',
               default=lambda: os.environ.get("BACKUP_SERVICE", DEFAULT_PRYSM_BACKUP_SERVICE),
               show_default=DEFAULT_PRYSM_BACKUP_SERVICE,
-              help='path to backup prysm service database')
+              help='prysm service (beacon-chain or validator) database to backup')
 def import_db_backup(backup_path, restore_target_dir, service):
-    """Import Prysm beacon-chain or validator Backup Prysm beacon-chain node or validator databases
-       (see for details: https://docs.prylabs.network/docs/prysm-usage/database-backups/)
+    """Import Prysm beacon-chain or validator database backup (see for details: https://docs.prylabs.network/docs/prysm-usage/database-backups/)
     """
 
     print("Importing database backup from {path} to {dir}".format(path=backup_path, dir=restore_target_dir))

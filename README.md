@@ -71,7 +71,7 @@ _The following variables can be customized to manage the location and content of
     # Value: true
     CONFIG_pyrmont=true
     ```
-    
+
 _Additionally, the content of the YAML configuration file can either be pregenerated and mounted into a container instance:_
 
 ```bash
@@ -133,194 +133,188 @@ _...and reference below for network/chain identification and communication confi
 
 see [chainlist.org](https://chainlist.org/) for a complete list
 
+
 #### Operations
 
 :flashlight: To assist with managing a `prysm` client and interfacing with the *Ethereum 2.0* network, the following utility functions have been included within the image.
 
-##### Check account balances
+##### Setup deposit accounts and tooling
 
-Display account balances of all accounts currently managed by a designated `geth` RPC server.
+Download Eth2 deposit CLI tool and setup validator deposit accounts.
 
-```
-$ geth-helper status check-balances --help
-Usage: geth-helper status check-balances [OPTIONS]
+`$SETUP_DEPOSIT_CLI=<boolean>` (**default**: `false`)
+- whether to download the Eth 2.0 deposit CLI maintained at https://github.com/ethereum/eth2.0-deposit-cli
 
-  Check all client managed account balances
+`$DEPOSIT_CLI_VERSION=<string>` (**default**: `v1.2.0`)
+- version of the Eth 2.0 deposit CLI to download
 
-Options:
-  --rpc-addr TEXT  server address to query for RPC calls  [default:
-                   (http://localhost:8545)]
-  --help           Show this message and exit.
-```
+`$ETH2_CHAIN=<string>` (**default**: `mainnet`)
+- Ethereum 2.0 chain to register deposit validator accounts and keystores for
 
-`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
-- `geth` RPC server address for querying network state
+`$SETUP_DEPOSIT_ACCOUNTS=<boolean>` (**default**: `false`)
+- whether to automatically setup Eth 2.0 validator depositor accounts ([see](https://github.com/ethereum/eth2.0-deposit-cli#step-2-create-keys-and-deposit_data-json) for more details)
 
-The balances output consists of a JSON list of entries with the following properties:
-  * __account__ - account owner's address
-  * __balance__ - total balance of account in decimal
+`$DEPOSIT_DIR=<path>` (**default**: `/var/tmp/deposit`)
+- container directory to generate Eth 2.0 validator deposit keystores
 
-###### example
+`$DEPOSIT_MNEMONIC_LANG=<string>` (**default**: `english`)
+- language to generate deposit mnemonic in 
 
-```bash
-docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status check-balances
+`$DEPOSIT_NUM_VALIDATORS=<int>` (**default**: `1`)
+- count of Eth 2.0 validator deposit keystores to generate
 
-[
-  {
-   "account": 0x652eD9d222eeA1Ad843efab01E60C29bF2CF6E4c,
-   "balance": 1000000
-  },
-  {
-   "account": 0x256eDb444eeA1Ad876efaa160E60C29bF8CH3D9a,
-   "balance": 2000000
-  }
-]
-```
+`$DEPOSIT_KEY_PASSWORD=<string>` (**default**: `passw0rd`)
+- validator deposit keystore password associated with generated mnemonic
 
-##### View client sync progress
-
-View current progress of an RPC server's sync with the network if not already caughtup.
-
-```
-$ geth-helper status sync-progress --help
-Usage: geth-helper status sync-progress [OPTIONS]
-
-  Check client blockchain sync status and process
-
-Options:
-  --rpc-addr TEXT  server address to query for RPC calls  [default:
-                   (http://localhost:8545)]
-  --help           Show this message and exit.
-```
-
-`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
-- `geth` RPC server address for querying network state
-
-The progress output consists of a JSON block with the following properties:
-  * __progress__ - percent (%) of total blocks processed and synced by the server
-  * __blocksToGo__ - number of blocks left to process/sync
-  * __bps__: rate of blocks processed/synced per second
-  * __percentageIncrease__ - progress percentage increase since last view
-  * __etaHours__ - estimated time (hours) to complete sync
-
-###### example
+A *validator_keys* directory containing deposit data and the generated validator deposit keystore(s) will be created at the `DEPOSIT_DIR` path.
 
 ```bash
-$ docker exec 0labs/geth:latest geth-helper status sync-progress
-
-  {
-   "progress":66.8226399830796,
-   "blocksToGo":4298054,
-   "bps":5.943412173361741,
-   "percentageIncrease":0.0018371597201962686,
-   "etaHours":200.87852803477827
-  }
+ls /var/tmp/deposit/validator_keys
+  deposit_data-1632777614.json  keystore-m_12381_3600_0_0_0-1632777613.json
 ```
 
-##### Backup and encrypt keystore
 
-Encrypt and backup client keystore to designated container/host location.
+##### Backup and import beacon-chain node or validator databases
+
+Backup node chain and validator databases using the `/db/backup` API and automatically import DBs.
 
 ```
-$ geth-helper account backup-keystore --help
-Usage: geth-helper account backup-keystore [OPTIONS] PASSWORD
+$ prysm-helper status backup-db --help
+Usage: prysm-helper status backup-db [OPTIONS]
 
-  Encrypt and backup wallet keystores.
-
-  PASSWORD password used to encrypt and secure keystore backups
+  Backup Prysm beacon-chain node or validator databases (see for details:
+  https://docs.prylabs.network/docs/prysm-usage/database-backups/)
 
 Options:
-  --keystore-dir TEXT  path to import a backed-up geth wallet key store
-                       [default: (/root/.ethereum/keystore)]
-  --backup-path TEXT   path containing backup of a geth wallet key store
-                       [default: (/tmp/backups)]
-  --help               Show this message and exit.
+  --host-addr TEXT  Prysm Eth2 metrics host address in format
+                    <protocol(http/https)>://<IP>:<port>  [default:
+                    (http://localhost:8080)]
+  --help            Show this message and exit.
 ```
 
-`$password=<string>` (**required**)
-- password used to encrypt and secure keystore backups. Keystore backup is encrypted using the `zip` utility's password protection feature.
+`$BACKUP_HOST_ADDR=<url>` (**default**: `http://localhost:8080`)
+- Prysm Eth2 metrics host address in format <protocol(http/https)>://<IP>:<port>
 
-`$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
-- container location to retrieve keys from
+`$AUTO_BACKUP_DB=<boolean>` (**default**: `false`)
+- whether to automatically execute database backups based on `$BACKUP_INTERVAL`
+
+`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `0 */6 * * * (every 6 hours)`)
+- database backup frequency based on a cron schedule
+
+
+##### Import beacon-chain or validator node database backup
+
+Import backed-up database to designated container/host data location.
+
+```
+$ prysm-helper status import-db-backup --help
+Usage: prysm-helper status import-db-backup [OPTIONS]
+
+  Import Prysm beacon-chain or validator Backup Prysm beacon-chain node or
+  validator databases (see for details:
+  https://docs.prylabs.network/docs/prysm-usage/database-backups/)
+
+Options:
+  --backup-path TEXT         path of backup prysm service database  [default:
+                             (/root/.eth2/backups/)]
+  --restore-target-dir TEXT  Directory to restore imported database backup to
+                             [default: (/root/.eth2)]
+  --service TEXT             path to backup prysm service database  [default:
+                             (beacon-chain)]
+  --help                     Show this message and exit.
+```
+
+`$IMPORT_BACKUP_DB=<string>` (**required**)
+- whether to automatically import a beacon-chain or validator node database on launch
+
+`$BACKUP_SERVICE=<string>` (**default**: `/root/.ethereum/keystore`)
+- service (beacon-chain or validator) database to backup
 
 `$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
-- container location to store encrypted keystore backups. **Note:** Using container `volume/mounts`, keystores can be backed-up to all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
+- path of backup Prysm service database to import
 
-`$AUTO_BACKUP_KEYSTORE=<boolean>` (**default**: `false`)
-- automatically backup keystore to $BACKUP_PATH location every $BACKUP_INTERVAL seconds
+`$RESTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
+- directory to restore imported database backup to
 
-`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `* * * * * (hourly)`)
-- keystore backup frequency based on cron schedules
 
-`$BACKUP_PASSWORD=<string>` (**required**)
-- encryption password for automatic backup operations - see *$password*
+##### Query Ethereum standard Beacon API
 
-##### Import backup
-
-Decrypt and import backed-up keystore to designated container/host keystore location.
+Execute a RESTful Ethereum Beacon HTTP API request.
 
 ```
-$ geth-helper account import-backup --help
-Usage: geth-helper account import-backup [OPTIONS] PASSWORD
+$ prysm-helper status api-request --help
+Usage: prysm-helper status api-request [OPTIONS]
 
-  Decrypt and import wallet keystores backups.
-
-  PASSWORD password used to decrypt and import keystore backups
+  Execute RESTful API HTTP request
 
 Options:
-  --keystore-dir TEXT  directory to import a backed-up geth wallet key store
-                       [default: (/root/.ethereum/keystore)]
-  --backup-path TEXT   path containing backup of a geth wallet key store
-                       [default: (/tmp/backups/wallet-backup.zip)]
-  --help               Show this message and exit.
+  --host-addr TEXT   Prysm Eth2 API host address in format
+                     <protocol(http/https)>://<IP>:<port>  [default:
+                     (http://localhost:3501)]
+  --api-method TEXT  HTTP method to execute a part of request  [default:
+                     (GET)]
+  --api-path TEXT    Restful API path to target resource  [default:
+                     (eth/v1/node/health)]
+  --api-data TEXT    Restful API request body data included within POST
+                     requests  [default: ({})]
+  --help             Show this message and exit.
 ```
 
-`$password=<string>` (**required**)
-- password used to decrypt keystore backups. Keystore backup is decrypted using the `zip/unzip` utility's password protection feature.
+`$API_HOST_ADDR=<url>` (**default**: `localhost:3501`)
+- Prysm Eth2 API host address in format <protocol(http/https)>://<IP>:<port>
 
-`$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
-- container location to import keys
+`$API_METHOD=<http-method>` (**default**: `GET`)
+- HTTP method to execute
 
-`$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
-- container location to retrieve keystore backup. **Note:** Using container `volume/mounts`, keystores can be imported from all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
+`$API_PATH=<url-path>` (**default**: `/eth/v1/node/health`)
+- RESTful API path to target resource
 
-##### Query RPC
+`$API_DATA=<json-string>` (**default**: `'{}'`)
+- RESTful API request body data included within POST requests
 
-Execute query against designated `geth` RPC server.
-
-```
-$ geth-helper status query-rpc --help
-Usage: geth-helper status query-rpc [OPTIONS]
-
-  Execute RPC query
-
-Options:
-  --rpc-addr TEXT  server address to query for RPC calls  [default:
-                   (http://localhost:8545)]
-  --method TEXT    RPC method to execute a part of query  [default:
-                   (eth_syncing)]
-  --params TEXT    comma separated list of RPC query parameters  [default: ()]
-  --help           Show this message and exit.
-```
-
-`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
-- `geth` RPC server address for querying network state
-
-`$RPC_METHOD=<geth-rpc-method>` (**default**: `eth_syncing`)
-- `geth` RPC method to execute
-
-`$RPC_PARAMS=<rpc-method-params>` (**default**: `''`)
-- `geth` RPC method parameters to include within call
-
-The output consists of a JSON blob corresponding to the expected return object for a given RPC method. Reference [Ethereum's RPC API wiki](https://eth.wiki/json-rpc/API) for more details.
+The output consists of a JSON blob corresponding to the expected return object for a given API query. Reference [Prysm's Ethereum Beacon API docs](https://docs.prylabs.network/docs/how-prysm-works/ethereum-public-api) for more details.
 
 ###### example
 
 ```bash
-docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net --env RPC_METHOD=eth_gasPrice \
-    0labs/geth:latest geth-helper status query-rpc
+docker exec prysm-beacon prysm-helper status api-request --api-path eth/v1/node/syncing
+{
+  "data": {
+        "head_slot": "2315233",
+        "is_syncing": false,
+        "sync_distance": "1"
+  }
+}
+```
 
-"0xe0d7b70f7" # 60,355,735,799 wei
+##### Import validator keystores
+
+Automatically import designated validator keystores and associated wallets on startup.
+
+`$SETUP_VALIDATOR=<boolean>` (**default**: `false`)
+- whether to attempt to import validator keystores and associated wallets
+
+`$VALIDATOR_WALLET_PASSWORD=<string>` (**required**)
+- password to secure validator wallet associated with imported keystore
+
+`$VALIDATOR_ACCOUNT_PASSWORD=<string>` (**required**)
+- password to secure validator account
+
+`$VALIDATOR_KEYS_DIR=<directory>` (**default**: `/keys`)
+- Path to a directory where keystores to be imported are stored
+
+`$VALIDATOR_WALLET_DIR=<directory>` (**default**: `/wallets`)
+- Path to a wallet directory within container for Prysm validator accounts
+
+`$ETH2_CHAIN=<string>` (**default**: `pyrmont`)
+- Ethereum 2.0 chain imported keystore and wallets are associated with
+
+
+All account wallets keystore/wallet details will be created at the `$VALIDATOR_WALLET_DIR`.
+
+```bash
+ls /wallets/direct/accounts/
+  all-accounts.keystore.json
 ```
 
 Examples
