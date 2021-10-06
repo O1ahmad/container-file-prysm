@@ -4,7 +4,7 @@
 
 `export image=0labs/prysm:v2.0.0`
 
-or included within an environment config file located either at a `.env` file within the same directory or specified via one of the role type `env_vars` environment variables.
+or included within an environment config file located either at a `.beacon.env or .validator.env` file within the same directory or specified via one of the role type `env_vars` environment variables.
 
 `export beacon_env_vars=/home/user/prysm/beacon.env`
 
@@ -39,7 +39,7 @@ or included within an environment config file located either at a `.env` file wi
 
 * Enable automatic acceptance of the terms of use when launching either a beacon-chain or validator node:
 ```
-# cat .env
+# cat .beacon.env
 CONFIG_accept-terms-of-use=true
 
 docker-compose up
@@ -47,7 +47,7 @@ docker-compose up
 
 * Launch a Prysm beacon-chain node connected to the Pyrmont Ethereum 2.0 testnet using a Goerli web3 Ethereum provider:
 ```
-# cat .env
+# cat .beacon.env
 CONFIG_http-web3provider=http://ethereum-rpc.goerli.01labs.net:8545
 CONFIG_pyrmont=true
 
@@ -56,8 +56,8 @@ docker-compose up beacon-node
 
 * Customize the deploy container image and host + container node data directory:
 ```
-# cat .env
-image=0labs/prysm:v2.0.0-rc.2
+# cat .beacon.env
+image=0labs/prysm:v2.0.0
 host_data_dir=/my/host/data
 CONFIG_datadir=/container/data/dir
 
@@ -66,7 +66,7 @@ docker-compose up
 
 * Install Eth2 deposit CLI tool and automatically setup multiple validator accounts/keys to register on the Pyrmont testnet:
 ```
-# cat .env
+# cat .beacon.env
 SETUP_DEPOSIT_CLI=true
 DEPOSIT_CLI_VERSION=v1.2.0
 SETUP_DEPOSIT_ACCOUNTS=true
@@ -79,7 +79,7 @@ docker-compose up beacon-node
 
 * Setup automatic cron backups of a localhost beacon-chain node DB every 12 hours (or twice a day):
 ```
-# cat .env
+# cat .beacon.env
 AUTO_BACKUP_DB=true
 BACKUP_HOST_ADDR=http://localhost:8080
 BACKUP_INTERVAL=0 */12 * * *

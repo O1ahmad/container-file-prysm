@@ -320,42 +320,55 @@ ls /wallets/direct/accounts/
 Examples
 ----------------
 
-* Create account and bind data/keystore directory to host path:
+* Enable automatic acceptance of the terms of use when launching either a beacon-chain or validator node:
 ```
-docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest geth account new --password <secret>
-```
-
-* Launch an Ethereum light client and connect it to the Ropsten, best current like-for-like representation of Ethereum, PoW (Proof of Work) test network:
-```
-docker run --env CONFIG-Eth-SyncMode=light 0labs/geth:latest geth --ropsten
+docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest
 ```
 
-* View sync progress of active local full-node:
+* Launch a Prysm beacon-chain node connected to the Pyrmont Ethereum 2.0 testnet using a Goerli web3 Ethereum provider:
 ```
-docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full 0labs/geth:latest geth --mainnet
+# cat .env
+CONFIG_http-web3provider=http://ethereum-rpc.goerli.01labs.net:8545
+CONFIG_pyrmont=true
 
-docker exec 01-geth geth-helper status sync-progress
-```
-
-* Run *fast* sync node with automatic daily backups of custom keystore directory:
-```
-docker run --env CONFIG-Eth-SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
-           --env AUTO_BACKUP_KEYSTORE=true --env BACKUP_INTERVAL="0 * * * *" \
-           --env BACKUP_PASSWORD=<secret> \
-  --volume ~/.ethereum/keystore:/tmp/keystore 0labs/geth:latest
+docker run --env-file 0labs/prysm:latest
 ```
 
-* Import account from keystore backup stored on an attached USB drive:
+* Import Prater validator keystore and associated wallets on startup:
 ```
-docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full \
-           --volume /path/to/usb/mount/keys:/tmp/keys \
-           --volume ~/.ethereum:/root/.ethereum \0labs/geth:latest geth --mainnet
+# cat .env
+ETH2_CHAIN=prater
+SETUP_VALIDATOR=true
+VALIDATOR_WALLET_PASSWORD=N7p3D1?!m+bA
+VALIDATOR_ACCOUNT_PASSWORD=passw0rd
+VALIDATOR_KEYS_DIR=/validator/keys
+VALIDATOR_WALLET_DIR=/validator/wallets
 
-docker exec --env BACKUP_PASSWORD=<secret>
-            --env BACKUP_PATH=/tmp/keys/my-wallets.zip
-            01-geth geth-helper account import-backup
 
-docker exec 01-geth account import /root/.ethereum/keystore/a-wallet
+docker run --env-file .env -v /host/validator/keys:/validator/keys 0labs/prysm:latest validator
+```
+
+* Install Eth2 deposit CLI tool and automatically setup multiple validator accounts/keys to register on the Pyrmont testnet:
+```
+# cat .env
+SETUP_DEPOSIT_CLI=true
+DEPOSIT_CLI_VERSION=v1.2.0
+SETUP_DEPOSIT_ACCOUNTS=true
+DEPOSIT_NUM_VALIDATORS=3
+ETH2_CHAIN=pyrmont
+DEPOSIT_KEY_PASSWORD=ABCabc123!@#$
+
+docker run --env-file .env 0labs/prysm:latest
+```
+
+* Setup automatic cron backups of a localhost beacon-chain node DB every 12 hours (or twice a day):
+```
+# cat .env
+AUTO_BACKUP_DB=true
+BACKUP_HOST_ADDR=http://localhost:8080
+BACKUP_INTERVAL=0 */12 * * *
+
+docker run --env-file .env 0labs/prysm:latest
 ```
 
 License
