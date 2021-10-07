@@ -81,7 +81,7 @@ datadir: "/mnt/data"
 http-web3provider: "https://mainnet.infura.io/v3/YOUR-PROJECT-ID"
 
 # mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.yml,target=/tmp/config.yml 0labs/prysm:latest --config-file /tmp/config.yml
+$ docker run --mount type=bind,source="$(pwd)"/custom-config.yml,target=/tmp/config.yml 0labs/prysm:latest beacon-chain --config-file /tmp/config.yml
 ```
 
 _...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
@@ -95,14 +95,14 @@ http-web3provider: "https://mainnet.infura.io/v3/YOUR-PROJECT-ID"
 # mount custom config into container
 $ docker run -it --env PRYSM_CONFIG_DIR=/tmp/prysm --env CONFIG_datadir=/new/data/dir --env CONFIG_accept-terms-of-use=true \
   --mount type=bind,source="$(pwd)"/custom-config.yml,target=/tmp/prysm/config.yml \
-  0labs/prysm:latest --config /tmp/prysm/config.yml
+  0labs/prysm:latest beacon-chain --config /tmp/prysm/config.yml
 ```
 
 _Moreover, see [here](https://docs.prylabs.network/docs/prysm-usage/parameters/) for a list of supported flags to set as runtime command-line flags._
 
 ```bash
 # connect to Prater Eth2 testnet and automatically accept the terms of use agreement 
-docker run 0labs/prysm:latest --prater --accept-terms-of-use
+docker run 0labs/prysm:latest beacon-chain --prater --accept-terms-of-use
 ```
 
 **Also, note:** as indicated in the linked documentation, CLI flags generally translate into configuration settings by removing the preceding `--` flag marker.
@@ -136,7 +136,7 @@ see [chainlist.org](https://chainlist.org/) for a complete list
 
 #### Operations
 
-:flashlight: To assist with managing a `prysm` client and interfacing with the *Ethereum 2.0* network, the following utility functions have been included within the image.
+:flashlight: To assist with managing a `prysm` client and interfacing with the *Ethereum 2.0* network, the following utility functions have been included within the image. *Note:* all tool command-line flags can alternatively be expressed as container runtime environment variables, as described below.
 
 ##### Setup deposit accounts and tooling
 
@@ -174,9 +174,9 @@ ls /var/tmp/deposit/validator_keys
 ```
 
 
-##### Backup and import beacon-chain node or validator databases
+##### Backup beacon-chain node or validator databases
 
-Backup node chain and validator databases using the `/db/backup` API and automatically import DBs.
+Backup node chain and validator databases using the `/db/backup` API.
 
 ```
 $ prysm-helper status backup-db --help
@@ -219,7 +219,7 @@ Options:
                              (/root/.eth2/backups/)]
   --restore-target-dir TEXT  Directory to restore imported database backup to
                              [default: (/root/.eth2)]
-  --service TEXT             path to backup prysm service database  [default:
+  --service TEXT             prysm service database to backup  [default:
                              (beacon-chain)]
   --help                     Show this message and exit.
 ```
@@ -227,7 +227,7 @@ Options:
 `$IMPORT_BACKUP_DB=<string>` (**default**: `false`)
 - whether to automatically import a beacon-chain or validator node database on launch
 
-`$BACKUP_SERVICE=<string>` (**default**: `/root/.ethereum/keystore`)
+`$BACKUP_SERVICE=<string>` (**default**: `beacon-chain`)
 - service (beacon-chain or validator) database to backup
 
 `$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
@@ -277,7 +277,7 @@ The output consists of a JSON blob corresponding to the expected return object f
 ###### example
 
 ```bash
-docker exec prysm-beacon prysm-helper status api-request --api-path eth/v1/node/syncing
+docker exec [--env API_PATH=eth/v1/node/syncing] prysm-beacon prysm-helper status api-request [--api-path eth/v1/node/syncing]
 {
   "data": {
         "head_slot": "2315233",
