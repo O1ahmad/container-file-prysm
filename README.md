@@ -4,8 +4,8 @@
 Container File :stars: :link: Prysm
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-prysm?color=yellow)
-[![0x0I](https://circleci.com/gh/0x0I/container-file-demo.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-demo)
-[![Docker Pulls](https://img.shields.io/docker/pulls/0labs/demo?style=flat)](https://hub.docker.com/repository/docker/0labs/demo)
+[![0x0I](https://circleci.com/gh/0x0I/container-file-prysm.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-prysm)
+[![Docker Pulls](https://img.shields.io/docker/pulls/0labs/prysm?style=flat)](https://hub.docker.com/repository/docker/0labs/prysm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
 Configure and operate Prysm: A full-featured client for the Ethereum 2.0 protocol, written in Go
