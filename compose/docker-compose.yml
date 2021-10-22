@@ -17,7 +17,7 @@ services:
       - ${beacon_env_vars:-.beacon.env}
     ports:
       - ${p2p_tcp_port:-13000}:13000/tcp
-      - ${p2p_udp_port:-12000}:12000/tcp
+      - ${p2p_udp_port:-12000}:12000/udp
       - ${eth2_api_port:-3501}:3501/tcp
       - ${beacon_rpc_port:-4000}:4000/tcp
       - ${beacon_metrics_port:-8080}:8080/tcp
