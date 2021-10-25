@@ -319,7 +319,7 @@ Examples
 
 * Enable automatic acceptance of the terms of use when launching either a beacon-chain or validator node:
 ```
-docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest
+docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest beacon-chain --config-file /etc/prysm/config.yml
 ```
 
 * Launch a Prysm beacon-chain node connected to the Pyrmont Ethereum 2.0 testnet using a Goerli web3 Ethereum provider:
