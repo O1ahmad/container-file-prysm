@@ -51,7 +51,7 @@ _The following variables can be customized to manage the location and content of
 - container path where the `prysm` YAML configuration should be maintained
 
   ```bash
-  PRYSM_CONFIG_DIR=/mnt/etc/geth
+  PRYSM_CONFIG_DIR=/mnt/etc/prysm
   ```
 
 `$CONFIG_<setting> = <value (string)>` **default**: *None*
