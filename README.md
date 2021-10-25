@@ -124,10 +124,10 @@ _...and reference below for network/chain identification and communication confi
 
 ###### chain id mappings
 
-| name | config setting (Eth : NetworkId) | command-line flag |
+| name | config setting (http-web3-provider) | command-line flag |
 | :---: | :---: | :---: |
-| Mainnet | 1 | `--mainnet` |
-| Goerli | 5 | `--goerli` |
+| Mainnet | mainnet | `--http-web3-provider=mainnet` |
+| Goerli | goerli | `--http-web3-provider=goerli` |
 
 **note:** only Eth1 web3 providers connected to either Mainnet or the Goerli testnet are supported currently.
 
@@ -157,23 +157,6 @@ Download Eth2 deposit CLI tool and setup validator deposit accounts.
 `$DEPOSIT_DIR=<path>` (**default**: `/var/tmp/deposit`)
 - container directory to generate Eth 2.0 validator deposit keystores
 
-`$DEPOSIT_MNEMONIC_LANG=<string>` (**default**: `english`)
-- language to generate deposit mnemonic in 
-
-`$DEPOSIT_NUM_VALIDATORS=<int>` (**default**: `1`)
-- count of Eth 2.0 validator deposit keystores to generate
-
-`$DEPOSIT_KEY_PASSWORD=<string>` (**default**: `passw0rd`)
-- validator deposit keystore password associated with generated mnemonic
-
-A *validator_keys* directory containing deposit data and the generated validator deposit keystore(s) will be created at the `DEPOSIT_DIR` path.
-
-```bash
-ls /var/tmp/deposit/validator_keys
-  deposit_data-1632777614.json  keystore-m_12381_3600_0_0_0-1632777613.json
-```
-
-
 ##### Backup beacon-chain node or validator databases
 
 Backup node chain and validator databases using the `/db/backup` API.
@@ -200,7 +183,6 @@ Options:
 
 `$BACKUP_INTERVAL=<cron-schedule>` (**default**: `0 */6 * * * (every 6 hours)`)
 - database backup frequency based on a cron schedule
-
 
 ##### Import beacon-chain or validator node database backup
 
@@ -236,6 +218,21 @@ Options:
 `$RESTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
 - directory to restore imported database backup to
 
+`$DEPOSIT_MNEMONIC_LANG=<string>` (**default**: `english`)
+- language to generate deposit mnemonic in
+
+`$DEPOSIT_NUM_VALIDATORS=<int>` (**default**: `1`)
+- count of Eth 2.0 validator deposit keystores to generate
+
+`$DEPOSIT_KEY_PASSWORD=<string>` (**default**: `passw0rd`)
+- validator deposit keystore password associated with generated mnemonic
+
+A *validator_keys* directory containing deposit data and the generated validator deposit keystore(s) will be created at the `DEPOSIT_DIR` path.
+
+```bash
+ls /var/tmp/deposit/validator_keys
+  deposit_data-1632777614.json  keystore-m_12381_3600_0_0_0-1632777613.json
+```
 
 ##### Query Ethereum standard Beacon API
 
@@ -331,7 +328,7 @@ docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest
 CONFIG_http-web3provider=http://ethereum-rpc.goerli.01labs.net:8545
 CONFIG_pyrmont=true
 
-docker run --env-file 0labs/prysm:latest
+docker run --env-file 0labs/prysm:latest beacon-chain --config-file /etc/prysm/config.yml
 ```
 
 * Import Prater validator keystore and associated wallets on startup:
@@ -345,7 +342,7 @@ VALIDATOR_KEYS_DIR=/validator/keys
 VALIDATOR_WALLET_DIR=/validator/wallets
 
 
-docker run --env-file .env -v /host/validator/keys:/validator/keys 0labs/prysm:latest validator
+docker run --env-file .env --volume /host/validator/keys:/validator/keys 0labs/prysm:latest validator
 ```
 
 * Install Eth2 deposit CLI tool and automatically setup multiple validator accounts/keys to register on the Pyrmont testnet:
