@@ -1,7 +1,7 @@
 <p><img src="https://avatars1.githubusercontent.com/u/12563465?s=200&v=4" alt="OCI logo" title="oci" align="left" height="70" /></p>
 <p><img src="https://prysmaticlabs.com/assets/PrysmStripe.png" alt="Prysm logo" title="prysm" align="right" height="60" /></p>
 
-Container File :stars: :link: Prysm
+Container File 🌠🔗 Prysm
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-prysm?color=yellow)
 [![0x0I](https://circleci.com/gh/0x0I/container-file-prysm.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-prysm)
