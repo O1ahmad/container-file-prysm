@@ -12,7 +12,7 @@ test:
 test-compose-beacon:
 	echo "image=${image_repo}:${version}" > compose/.env-test
 	cd compose && docker-compose --env-file .env-test config && docker-compose --env-file .env-test up -d beacon-node && \
-	sleep 60 && docker-compose logs 2>&1 | grep "Running on Prater Testnet" && \
+	sleep 30 && docker-compose logs 2>&1 | grep "Running on the Prater Testnet" && \
 	docker-compose logs 2>&1 | grep "Starting initial chain sync" && \
 	docker-compose logs 2>&1 | grep "Connected to eth1 proof-of-work chain" && \
 	docker-compose down && rm .env-test
@@ -20,7 +20,7 @@ test-compose-beacon:
 test-compose-validator:
 	echo "image=${image_repo}:${version}" > compose/.env-test
 	cd compose && docker-compose --env-file .env-test config && docker-compose --env-file .env-test up -d  validator && \
-	sleep 30 && docker-compose logs 2>&1 | grep "Running on Prater Testnet" && \
+	sleep 30 && docker-compose logs 2>&1 | grep "Running on the Prater Testnet" && \
 	docker-compose logs 2>&1 | grep "Starting validator node" && \
 	docker-compose logs 2>&1 | grep "Starting Prysm web UI on address" && \
 	docker-compose down && rm .env-test
