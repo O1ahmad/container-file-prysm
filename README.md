@@ -369,7 +369,7 @@ DEPOSIT_NUM_VALIDATORS=3
 ETH2_CHAIN=pyrmont
 DEPOSIT_KEY_PASSWORD=ABCabc123!@#$
 
-docker run --env-file .env 0labs/prysm:latest
+docker run -it --env-file .env 0labs/prysm:latest
 ```
 
 * Setup automatic cron backups of a localhost beacon-chain node DB every 12 hours (or twice a day):
