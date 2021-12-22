@@ -87,7 +87,7 @@ def customize(config_path, download_genesis):
                 # ensure genesis-state file DIR exists
                 os.makedirs(os.path.dirname(value), exist_ok=True)
                 genesis_url = "https://github.com/eth2-clients/eth2-networks/raw/master/shared/{chain}/genesis.ssz".format(
-                    chain=os.environ.get("ETH2_CHAIN", "pyrmont")
+                    chain=os.environ.get("ETH2_CHAIN", "prater")
                 )
                 urllib.request.urlretrieve(genesis_url, value)
 
