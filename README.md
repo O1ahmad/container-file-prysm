@@ -74,16 +74,16 @@ _The following variables can be customized to manage the location and content of
 
     `<setting>` -- represents a YAML config setting:
     ```bash
-    # [YAML Setting 'pyrmont']
-    CONFIG_pyrmont=<value>
+    # [YAML Setting 'prater']
+    CONFIG_prater=<value>
     ```
 
     `<value>` -- represents setting value to configure:
     ```bash
-    # [YAML Setting 'pyrmont']
-    # Setting: pyrmont
+    # [YAML Setting 'prater']
+    # Setting: prater
     # Value: true
-    CONFIG_pyrmont=true
+    CONFIG_prater=true
     ```
 
 _Additionally, the content of the YAML configuration file can either be pregenerated and mounted into a container instance:_
@@ -317,7 +317,7 @@ Automatically import designated validator keystores and associated wallets on st
 `$VALIDATOR_WALLET_DIR=<directory>` (**default**: `/wallets`)
 - Path to a wallet directory within container for Prysm validator accounts
 
-`$ETH2_CHAIN=<string>` (**default**: `pyrmont`)
+`$ETH2_CHAIN=<string>` (**default**: `prater`)
 - Ethereum 2.0 chain imported keystore and wallets are associated with
 
 
@@ -336,11 +336,11 @@ Examples
 docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest beacon-chain --config-file /etc/prysm/config.yml
 ```
 
-* Launch a Prysm beacon-chain node connected to the Pyrmont Ethereum 2.0 testnet using a Goerli web3 Ethereum provider:
+* Launch a Prysm beacon-chain node connected to the Prater Ethereum 2.0 testnet using a Goerli web3 Ethereum provider:
 ```
 # cat .env
 CONFIG_http-web3provider=http://ethereum-rpc.goerli.01labs.net:8545
-CONFIG_pyrmont=true
+CONFIG_prater=true
 
 docker run --env-file 0labs/prysm:latest beacon-chain --config-file /etc/prysm/config.yml
 ```
@@ -359,14 +359,14 @@ VALIDATOR_WALLET_DIR=/validator/wallets
 docker run --env-file .env --volume /host/validator/keys:/validator/keys 0labs/prysm:latest validator
 ```
 
-* Install Eth2 deposit CLI tool and automatically setup multiple validator accounts/keys to register on the Pyrmont testnet:
+* Install Eth2 deposit CLI tool and automatically setup multiple validator accounts/keys to register on the Prater testnet:
 ```
 # cat .env
 SETUP_DEPOSIT_CLI=true
 DEPOSIT_CLI_VERSION=v1.2.0
 SETUP_DEPOSIT_ACCOUNTS=true
 DEPOSIT_NUM_VALIDATORS=3
-ETH2_CHAIN=pyrmont
+ETH2_CHAIN=prater
 DEPOSIT_KEY_PASSWORD=ABCabc123!@#$
 
 docker run -it --env-file .env 0labs/prysm:latest
