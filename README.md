@@ -121,6 +121,13 @@ docker run 0labs/prysm:latest beacon-chain --prater --accept-terms-of-use
 
 **Also, note:** as indicated in the linked documentation, CLI flags generally translate into configuration settings by removing the preceding `--` flag marker.
 
+`$EXTRA_ARGS=<string>` (**default**: `''`)
+- space separated list of command-line flags to pass at run-time
+
+  ```bash
+  docker run --env EXTRA_ARGS="--prater --enable-peer-scorer --force-clear-db" 0labs/prysm:latest
+  ```
+
 _...and reference below for network/chain identification and communication configs:_ 
 
 ###### port mappings
