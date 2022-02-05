@@ -54,6 +54,8 @@ WORKDIR /test
 
 COPY test /test
 
+ENV NOLOAD_CONFIG=1
+
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
 # ******* Stage: release ******* #
@@ -90,5 +92,7 @@ FROM base as tools
 COPY --from=build-tools /tmp/prysm/bazel-bin/cmd/client-stats/client-stats_/client-stats /usr/local/bin/
 
 WORKDIR /var/lib/prysm
+
+ENV NOLOAD_CONFIG=1
 
 CMD ["/bin/bash"]

@@ -84,5 +84,5 @@ AUTO_BACKUP_DB=true
 BACKUP_HOST_ADDR=http://localhost:8080
 BACKUP_INTERVAL=0 */12 * * *
 
-docker-compose up
+docker-compose up beacon-node
 ```
