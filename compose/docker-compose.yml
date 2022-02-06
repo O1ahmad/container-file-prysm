@@ -9,8 +9,6 @@ services:
     container_name: prysm-beacon
     command:
       - "beacon-chain"
-      - "--config-file"
-      - "${PRYSM_CONFIG_DIR:-/etc/prysm}/config.yml"
     environment:
       PRYSM_CONFIG_DIR:
     env_file:

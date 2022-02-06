@@ -95,7 +95,7 @@ datadir: "/mnt/data"
 http-web3provider: "https://mainnet.infura.io/v3/YOUR-PROJECT-ID"
 
 # mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.yml,target=/tmp/config.yml 0labs/prysm:latest beacon-chain --config-file /tmp/config.yml
+$ docker run -e PRYSM_CONFIG_DIR=/tmp/prysm --mount type=bind,source="$(pwd)"/custom-config.yml,target=/tmp/prysm/config.yml 0labs/prysm:latest beacon-chain
 ```
 
 _...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
@@ -109,7 +109,7 @@ http-web3provider: "https://mainnet.infura.io/v3/YOUR-PROJECT-ID"
 # mount custom config into container
 $ docker run -it --env PRYSM_CONFIG_DIR=/tmp/prysm --env CONFIG_datadir=/new/data/dir --env CONFIG_accept-terms-of-use=true \
   --mount type=bind,source="$(pwd)"/custom-config.yml,target=/tmp/prysm/config.yml \
-  0labs/prysm:latest beacon-chain --config /tmp/prysm/config.yml
+  0labs/prysm:latest beacon-chain
 ```
 
 _Moreover, see [here](https://docs.prylabs.network/docs/prysm-usage/parameters/) for a list of supported flags to set as runtime command-line flags._
@@ -340,7 +340,7 @@ Examples
 
 * Enable automatic acceptance of the terms of use when launching either a beacon-chain or validator node:
 ```
-docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest beacon-chain --config-file /etc/prysm/config.yml
+docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest
 ```
 
 * Launch a Prysm beacon-chain node connected to the Prater Ethereum 2.0 testnet using a Goerli web3 Ethereum provider:
@@ -349,7 +349,7 @@ docker run --env CONFIG_accept-terms-of-use=true 0labs/prysm:latest beacon-chain
 CONFIG_http-web3provider=http://ethereum-rpc.goerli.01labs.net:8545
 CONFIG_prater=true
 
-docker run --env-file 0labs/prysm:latest beacon-chain --config-file /etc/prysm/config.yml
+docker run --env-file .env 0labs/prysm:latest
 ```
 
 * Import Prater validator keystore and associated wallets on startup:
@@ -361,7 +361,6 @@ VALIDATOR_WALLET_PASSWORD=N7p3D1?!m+bA
 VALIDATOR_ACCOUNT_PASSWORD=passw0rd
 VALIDATOR_KEYS_DIR=/validator/keys
 VALIDATOR_WALLET_DIR=/validator/wallets
-
 
 docker run --env-file .env --volume /host/validator/keys:/validator/keys 0labs/prysm:latest validator
 ```
@@ -375,8 +374,9 @@ SETUP_DEPOSIT_ACCOUNTS=true
 DEPOSIT_NUM_VALIDATORS=3
 ETH2_CHAIN=prater
 DEPOSIT_KEY_PASSWORD=ABCabc123!@#$
+NOLOAD_CONFIG=1
 
-docker run -it --env-file .env 0labs/prysm:latest
+docker run -it --env-file .env 0labs/prysm:latest ls /var/tmp/deposit
 ```
 
 * Setup automatic cron backups of a localhost beacon-chain node DB every 12 hours (or twice a day):
