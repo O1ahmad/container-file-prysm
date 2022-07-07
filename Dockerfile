@@ -16,8 +16,8 @@ RUN git clone --depth 1 --branch ${prysm_version} https://github.com/prysmaticla
 RUN cd prysm && bazel build --config=release //beacon-chain:beacon-chain
 RUN cd prysm && bazel build --config=release //validator:validator
 
-RUN mkdir /tmp/bin && cp /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /tmp/bin
-RUN mkdir /tmp/bin && cp /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /tmp/bin
+RUN mkdir /tmp/bin && cp /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /tmp/bin/beacon-chain
+RUN mkdir /tmp/bin && cp /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /tmp/bin/validator
 
 # ----- Stage: package install -----
 FROM ubuntu:20.04 as builder-package
@@ -99,7 +99,7 @@ CMD ["beacon-chain", "--accept-terms-of-use"]
 
 # ******* Stage: tools ******* #
 
-FROM builder as build-tools
+FROM builder-source as build-tools
 
 RUN cd /tmp/prysm && bazel build --config=release //cmd/client-stats:client-stats
 

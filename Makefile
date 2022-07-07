@@ -4,7 +4,7 @@ version         :=      $(shell cat $(versionfile))
 image_repo      :=      0labs/prysm
 
 build:
-	docker build --tag $(image_repo):build-$(version) --build-arg prysm_version=$(version) .
+	docker build --tag $(image_repo):$(version) --build-arg prysm_version=$(version) .
 
 test:
 	docker build --target test --build-arg prysm_version=$(version) --tag prysm:test . && docker run --env-file test/test.env prysm:test
