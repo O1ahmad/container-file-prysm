@@ -12,15 +12,14 @@ test:
 test-compose-beacon:
 	echo "image=${image_repo}:${version}" > compose/.env-test
 	cd compose && docker-compose --env-file .env-test config && docker-compose --env-file .env-test up -d beacon-node && \
-	sleep 30 && docker-compose logs 2>&1 | grep "Running on the Prater Testnet" && \
+	sleep 30 && docker-compose logs --tail 10 && docker-compose logs 2>&1 | grep "Running on the Prater Testnet" && \
 	docker-compose logs 2>&1 | grep "Starting initial chain sync" && \
-	docker-compose logs 2>&1 | grep "Connected to eth1 proof-of-work chain" && \
-	docker-compose down && rm .env-test
+	docker-compose down && rm .env-test;
 
 test-compose-validator:
 	echo "image=${image_repo}:${version}" > compose/.env-test
 	cd compose && docker-compose --env-file .env-test config && docker-compose --env-file .env-test up -d  validator && \
-	sleep 30 && docker-compose logs 2>&1 | grep "Running on the Prater Testnet" && \
+	sleep 30 && docker-compose logs --tail 10 && docker-compose logs 2>&1 | grep "Running on the Prater Testnet" && \
 	docker-compose logs 2>&1 | grep "Starting validator node" && \
 	docker-compose logs 2>&1 | grep "Starting Prysm web UI on address" && \
 	docker-compose down && rm .env-test
@@ -34,7 +33,7 @@ latest:
 	docker push $(image_repo):latest
 
 tools:
-	docker build --target tools --tag $(image_repo):$(version)-tools --build-arg prysm_version=$(version) .
+	docker build --target build-tools --tag $(image_repo):$(version)-tools --build-arg prysm_version=$(version) .
 	docker push ${image_repo}:$(version)-tools
 
 .PHONY: test

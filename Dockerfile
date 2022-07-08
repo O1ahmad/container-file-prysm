@@ -66,7 +66,7 @@ ENV NOLOAD_CONFIG=1
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
 # ******* Stage: release ******* #
-FROM --platform=linux/amd64 base as release
+FROM base as release
 
 ARG version=0.1.1
 
