@@ -2,45 +2,32 @@ ARG build_version="golang:1.16-buster"
 ARG build_type="package"
 ARG prysm_version=v2.0.6
 
-# ******* Stage: builder ******* #
-FROM ${build_version} as builder-source
-
-ARG prysm_version
-ARG bazelisk_version=v1.10.1
-
-RUN apt-get update && apt-get install -y cmake libtinfo5 libgmp-dev npm && npm install -g @bazel/bazelisk@${bazelisk_version} && bazel version
-
-WORKDIR /tmp
-RUN git clone --depth 1 --branch ${prysm_version} https://github.com/prysmaticlabs/prysm
-
-RUN cd prysm && bazel build --config=release //beacon-chain:beacon-chain
-RUN cd prysm && bazel build --config=release //validator:validator
-
-RUN mkdir /tmp/bin && cp /tmp/prysm/bazel-bin/cmd/beacon-chain/beacon-chain_/beacon-chain /tmp/bin/beacon-chain
-RUN mkdir /tmp/bin && cp /tmp/prysm/bazel-bin/cmd/validator/validator_/validator /tmp/bin/validator
+# TODO: readd build/install from source conditional
 
 # ----- Stage: package install -----
-FROM ubuntu:20.04 as builder-package
+FROM debian:buster as builder-package
 
 ARG prysm_version
 
-RUN apt update && apt install --yes --no-install-recommends curl ca-certificates
+RUN apt update && apt install --yes --no-install-recommends curl ca-certificates apt-transport-https gnupg2 curl
 
 WORKDIR /tmp/bin
-RUN curl --fail -L https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/beacon-chain-${prysm_version}-linux-amd64 > /tmp/bin/beacon-chain 
+RUN curl --fail -L https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/beacon-chain-${prysm_version}-linux-amd64 > /tmp/bin/beacon-chain
 RUN curl --fail -L https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/validator-${prysm_version}-linux-amd64 > /tmp/bin/validator
+RUN chmod +x /tmp/bin/beacon-chain /tmp/bin/validator
 
 FROM builder-${build_type} as build-condition
 
 # ******* Stage: base ******* #
-FROM ubuntu:20.04 as base
+FROM debian:buster as base
 
 RUN apt update && apt install --yes --no-install-recommends \
     ca-certificates \
     curl \
 	cron \
-    pip \
+    python3-pip \
     tini \
+	apt-transport-https gnupg2 \
     # apt cleanup
 	&& apt-get autoremove -y; \
 	apt-get clean; \
@@ -54,10 +41,12 @@ COPY scripts/entrypoint.sh /usr/local/bin/prysm-entrypoint
 COPY scripts/prysm-helper.py /usr/local/bin/prysm-helper
 RUN chmod 775 /usr/local/bin/prysm-helper
 
-RUN pip install click requests pyaml
+RUN pip3 install click requests pyaml
 
 COPY --from=build-condition /tmp/bin/beacon-chain /usr/local/bin/
 COPY --from=build-condition /tmp/bin/validator /usr/local/bin/
+
+RUN  chmod +x /usr/local/bin/beacon-chain /usr/local/bin/validator
 
 ENTRYPOINT ["prysm-entrypoint"]
 
@@ -77,7 +66,7 @@ ENV NOLOAD_CONFIG=1
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
 # ******* Stage: release ******* #
-FROM base as release
+FROM --platform=linux/amd64 base as release
 
 ARG version=0.1.1
 
@@ -99,18 +88,13 @@ CMD ["beacon-chain", "--accept-terms-of-use"]
 
 # ******* Stage: tools ******* #
 
-FROM builder-source as build-tools
+FROM base as build-tools
 
-RUN cd /tmp/prysm && bazel build --config=release //cmd/client-stats:client-stats
+ARG prysm_version
 
-# ------- #
+WORKDIR /tmp/bin
+RUN curl --fail -L "https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/client-stats-${prysm_version}-linux-amd64" > /tmp/bin/client-stats
 
-FROM base as tools
-
-COPY --from=build-tools /tmp/prysm/bazel-bin/cmd/client-stats/client-stats_/client-stats /usr/local/bin/
-
-WORKDIR /var/lib/prysm
-
-ENV NOLOAD_CONFIG=1
+RUN cp /tmp/bin/client-stats /usr/local/bin && chmod +x /usr/local/bin/client-stats
 
 CMD ["/bin/bash"]
