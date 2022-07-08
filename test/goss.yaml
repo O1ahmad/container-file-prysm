@@ -2,13 +2,13 @@
 file:
   /usr/local/bin/beacon-chain:
     exists: true
-    mode: "0555"
+    mode: "0755"
     owner: root
     group: root
     filetype: file
   /usr/local/bin/validator:
     exists: true
-    mode: "0555"
+    mode: "0755"
     owner: root
     group: root
     filetype: file
